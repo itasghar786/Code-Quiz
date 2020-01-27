@@ -1,0 +1,204 @@
+var questionHeading = document.querySelector('.quiz-question');
+var nextBtn = document.querySelector('.next-question');
+var quizStartBtn = document.querySelector('.quiz-start-btn');
+var quizStartContainer = document.querySelector('.quiz-start');
+var quiztContainer = document.querySelector('.quiz-container');
+var feedBack = document.querySelector('.feedback');
+var timerContainer = document.querySelector('.quiz-timer');
+var timer = document.querySelector('.timer');
+var progressBar = document.querySelector('.progress-bar');
+var quizScoreContainer = document.querySelector('.quiz-score-container');
+var quizScore = document.querySelector('.quiz-score');
+var checkBoxes = document.querySelectorAll('input[type=checkbox]');
+var restartQuizBtn = document.querySelector('.restart-btn');
+var scoresContainer = document.querySelector('.scores-list')
+var scoresLinkContainer = document.querySelector('.scores-link');
+
+// Answer choices Elements
+var answerElement1 = document.querySelector('#answer1');
+var answerElement2 = document.querySelector('#answer2');
+var answerElement3 = document.querySelector('#answer3');
+var answerElement4 = document.querySelector('#answer4');
+
+const quizQuestions = [
+    {
+        question: "1. What is the difference between a block level element and an inline level element?",
+        choice1: "Blocks are big legos. Inline elements are skates",
+        choice2: "Blocks fill the whole width they are contained in. Inline element don't.",
+        choice3: "Blocks are box model elements. Inline are flexboxes.",
+        choice4: "Blocks are passed as arguments. Inline elements are API's.",
+        correctAnswer: "2"
+    },
+    {
+        question: "2. What does Array.flat do?",
+        choice1: "It makes an array that has arrays into one array.",
+        choice2: "It makes fat objects into skinny arrays.",
+        choice3: "It deletes all the items in an array.",
+        choice4: "It makes new indexes in an array.",
+        correctAnswer: "1"
+    },
+    {
+        question: "3. A CSS example of a pseudo selector is...",
+        choice1: ":click",
+        choice2: ":change",
+        choice3: ":hover",
+        choice4: "h1 > p",
+        correctAnswer: "3"
+    },
+    {
+        question: "4. An example of an HTML element that's self closing",
+        choice1: "The <img> tag",
+        choice2: "The <br> tag",
+        choice3: "The <link> tag",
+        choice4: "All of the above.",
+        correctAnswer: "4"
+    },
+    {
+        question: "5. CSS is short for...",
+        choice1: "Cascading Style Sheeps",
+        choice2: "Cascading Style Sheets",
+        choice3: "Centered System Signs",
+        choice4: "Cats Sing Songs",
+        correctAnswer: "2"
+    },
+]
+
+var questionIndex = 0;
+var timeLeft = 60;
+var width = 500;
+var TIMER;
+var score = 0;
+var initials;
+
+// Setting up the data that will get saved to local storage
+let records = [];
+let user = {};
+
+function startTimer() {
+    TIMER = setInterval(() => {
+        timeLeft--;
+        timer.textContent = `You have ${timeLeft} seconds left.`;
+        progressBar.style.maxWidth = (timeLeft * 1017 / 100) + 'px';
+        if (timeLeft <= 0) {
+            stopTimer();
+        }
+        for (checkbox of checkBoxes) {
+            if (questionIndex >= quizQuestions.length - 1 && checkbox.checked === true) {
+                stopTimer();
+            }
+        }
+    }, 1000)
+}
+
+function stopTimer() {
+    clearInterval(TIMER);
+    setScore();
+    quizScoreContainer.style.display = 'block';
+    quizScore.textContent = `You had ${score} of 5 correct.`
+}
+
+function setScore() {
+    initials = prompt('Quiz complete! Enter your initials to save your score.');
+    user.name = initials;
+    user.finalScore = score;
+    records.push(user);
+    if (records && initials) {
+        localStorage.setItem('records', JSON.stringify(records));
+    }
+}
+
+function getScores() {
+    let recordCollection = JSON.parse(localStorage.getItem('records'));
+    if (recordCollection) {
+        for (let record of recordCollection) {
+            records.push(record);
+        }
+    }
+}
+
+questionHeading.textContent = quizQuestions[questionIndex].question;
+answerElement1.textContent = quizQuestions[questionIndex].choice1;
+answerElement2.textContent = quizQuestions[questionIndex].choice2;
+answerElement3.textContent = quizQuestions[questionIndex].choice3;
+answerElement4.textContent = quizQuestions[questionIndex].choice4;
+
+
+// Event Listeners
+quizStartBtn.addEventListener('click', startQuiz);
+restartQuizBtn.addEventListener('click', reStartQuiz);
+
+function getNextQuestion() {
+    for (checkbox of checkBoxes) {
+        if (questionIndex < quizQuestions.length - 1 && checkbox.checked) {
+            questionIndex++;
+            resetQuestions();
+        }
+    }
+
+    questionHeading.textContent = quizQuestions[questionIndex].question;
+    answerElement1.textContent = quizQuestions[questionIndex].choice1;
+    answerElement2.textContent = quizQuestions[questionIndex].choice2;
+    answerElement3.textContent = quizQuestions[questionIndex].choice3;
+    answerElement4.textContent = quizQuestions[questionIndex].choice4;
+}
+
+function startQuiz() {
+    startTimer();
+    disableCheckboxes();
+    checkAnswers();
+    getScores();
+    scoresLinkContainer.style.display = 'none';
+    quizStartContainer.style.display = 'none';
+    quiztContainer.style.display = 'block';
+    timerContainer.style.display = 'block';
+}
+
+function reStartQuiz() {
+    document.location.reload();
+}
+
+function resetQuestions() {
+    for (let checkbox of checkBoxes) {
+        checkbox.checked = false;
+        checkbox.disabled = false;
+        checkbox.nextSibling.style.opacity = '1';
+    }
+    feedBack.textContent = '';
+    feedBack.classList.remove('correct', 'wrong');
+}
+
+function disableCheckboxes() {
+    for (let checkbox of checkBoxes) {
+        checkbox.addEventListener('click', (e) => {
+            if (e.target.checked) {
+                for (let unchecked of checkBoxes) {
+                    if (!unchecked.checked) {
+                        unchecked.disabled = true;
+                        unchecked.nextSibling.style.opacity = '0.5';
+                    }
+                    checkbox.disabled = true;
+                }
+            }
+        })
+    }
+}
+
+function checkAnswers() {
+    for (i = 0; i < checkBoxes.length; i++) {
+        checkBoxes[i].addEventListener('click', (e) => {
+            if (e.target.nextSibling.dataset.value === quizQuestions[questionIndex].correctAnswer) {
+                score++;
+                feedBack.textContent = 'That is correct!';
+                feedBack.classList.add('correct');
+            } else {
+                console.log('Answer is wrong');
+                feedBack.classList.add('wrong');
+                feedBack.textContent = 'Wrong!';
+                timeLeft -= 10;
+            }
+            setTimeout(function () {
+                getNextQuestion();
+            }, 1000);
+        })
+    }
+} 

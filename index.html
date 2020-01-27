@@ -1,0 +1,76 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Code Quiz</title>
+    <link rel="stylesheet" href="assets/css/normalize.css">
+    <link rel="stylesheet" href="assets/css/main.css">
+</head>
+
+<body>
+
+    <div class="main-container">
+
+        <div class="scores-link">
+            <a href="scores.html">See Scores</a>
+        </div>
+
+        <div class="quiz-start">
+            <p class="quiz-instructions">
+                This is a Code Quiz that will cheack your knowlege.
+            </p>
+            <button class="btn quiz-start-btn">Start Quiz</button>
+        </div>
+
+        <div class="quiz-container">
+            <div class="quiz-timer">
+                <p class="timer"></p>
+                <div class="progress-bar-wrap">
+                    <p class="progress-bar"></p>
+                </div>
+            </div>
+
+            <h1>Web Development Quiz</h1>
+            <h2 class="quiz-question"> Question</h2>
+            <ul>
+                <li>
+                    <label class="checkbox">
+                        <input type="checkbox"><span id="answer1" class="answers" data-value="1"> answers</span>
+                    </label>
+                </li>
+                <li>
+                    <label class="checkbox">
+                        <input type="checkbox"><span id="answer2" class="answers" data-value="2"> answers</span>
+                    </label>
+                </li>
+                <li>
+                    <label class="checkbox">
+                        <input type="checkbox"><span id="answer3" class="answers" data-value="3">answers</span>
+                    </label>
+                </li>
+                <li>
+                    <label class="checkbox">
+                        <input type="checkbox"><span id="answer4" class="answers" data-value="4"> answers</span>
+                    </label>
+                </li>
+            </ul>
+
+
+            <p class="feedback"></p>
+        </div>
+
+        <div class="quiz-score-container">
+            <p class="quiz-score"></p>
+            <button class="btn restart-btn"></button>
+        </div>
+
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
